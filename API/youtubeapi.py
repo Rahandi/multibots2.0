@@ -63,7 +63,7 @@ class YoutubeApi():
                 'alt': 'Multi_Bots YoutubeDownload',
                 'thumbnail': 'https://img.youtube.com/vi/%s/hqdefault.jpg' % pafyObj.videoid,
                 'title': None,
-                'text': str(pafyObj.title)[:60]
+                'text': str(pafyObj.title)[:60],
                 'action': self.bot.actionBuilder(2, ['msg', 'msg'], ['download Video', 'download Audio'], ['/youtube-download-video: %s' % (link), '/youtube-download-audio: %s' % (link)])
             }
             self.bot.replyButtons(token, data)
@@ -75,13 +75,17 @@ class YoutubeApi():
             pafyObj = pafy.new(link)
             thumbnail = 'https://img.youtube.com/vi/%s/mqdefault.jpg' % (pafyObj.videoid)
             videolist = pafyObj.streams
-            resolution, extension, size, url = [], [], [], []
+            text = '『Youtube Download Video』\n'
             for obj in videolist:
-                resolution.append(str(obj.resolution.split('x')[1]) + 'p')
-                extension.append(obj.extensions)
-                size.append(humansize(obj.get_filesize()))
-                url.append(obj.url)
-            return url, size, extension, resolution
+                text += '\n%s' % (str(obj.resolution.split('x')[1]) + 'p')
+                text += ' %s' % (obj.extensions)
+                text += ' %s' % (humansize(obj.get_filesize()))
+                text += '\n%s\n' % (shorten(obj.url))
+            custom = [
+                self.bot.imageMessage(thumbnail),
+                self.bot.textMessage(str(text))
+            ]
+            self.bot.replyCustom(token, custom)
         except Exception as e:
             raise e
 
@@ -90,13 +94,17 @@ class YoutubeApi():
             pafyObj = pafy.new(link)
             thumbnail = 'https://img.youtube.com/vi/%s/mqdefault.jpg' % (pafyObj.videoid)
             audiolist = pafyObj.audiostreams
-            bitrate, extension, size, url = [], [], [], []
+            text = '『Youtube Download Audio』\n'
             for obj in audiolist:
-                extension.append(obj.extension)
-                bitrate.append(obj.bitrate)
-                size.append(humansize(obj.get_filesize()))
-                url.append(obj.url)
-            return url, size, extension, bitrate
+                text += '\n%s' % (obj.extension)
+                text += ' %s' % (obj.bitrate)
+                text += ' %s' % (humansize(obj.get_filesize()))
+                text += '\n%s\n' % (shorten(obj.url))
+            custom = [
+                self.bot.imageMessage(thumbnail),
+                self.bot.textMessage(str(text))
+            ]
+            self.bot.replyCustom(token, custom)
         except Exception as e:
             raise e
 
@@ -111,3 +119,12 @@ class YoutubeApi():
             return '%s %s' % (f, suffixes[i])
         except Exception as e:
             raise e
+
+    def shorten(url):
+        api_key = 'AIzaSyB2JuzKCAquSRSeO9eiY6iNE9RMoZXbrjo'
+        req_url = 'https://www.googleapis.com/urlshortener/v1/url?key=' + api_key
+        payload = {'longUrl': url}
+        headers = {'content-type': 'application/json'}
+        r = requests.post(req_url, data=json.dumps(payload), headers=headers)
+        resp = json.loads(r.text)
+        return resp['id']
