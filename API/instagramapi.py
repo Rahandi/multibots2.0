@@ -17,10 +17,10 @@ class InstagramAPI():
                         madiatype = data['mediatype']
                         text = data['caption'] + '\n\nlike: {}\ncomment: {}'.format(data['like_count'], data['comment_count'])
                         if mediatype == 1:
-                            text += '\ndirect link: {}'.format(campur.shorten(data['url']))
+                            text += '\ndirect link: {}'.format(self.campur.shorten(data['url']))
                             custom = [self.bot.imageMessage(data['url'])]
                         elif mediatype == 2:
-                            text += '\ndirect link: {}'.format(campur.shorten(data['url']))
+                            text += '\ndirect link: {}'.format(self.campur.shorten(data['url']))
                             custom = [self.bot.videoMessage(data['url'], data['preview'])]
                         elif mediatype == 8:
                             urllist = data['url']

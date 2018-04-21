@@ -81,8 +81,8 @@ class YoutubeApi():
             for obj in videolist:
                 text += '\n%s' % (str(obj.resolution.split('x')[1]) + 'p')
                 text += ' %s' % (obj.extensions)
-                text += ' %s' % (humansize(obj.get_filesize()))
-                text += '\n%s\n' % (campur.shorten(obj.url))
+                text += ' %s' % (self.campur.humansize(obj.get_filesize()))
+                text += '\n%s\n' % (self.campur.shorten(obj.url))
             custom = [
                 self.bot.imageMessage(thumbnail),
                 self.bot.textMessage(str(text))
@@ -100,8 +100,8 @@ class YoutubeApi():
             for obj in audiolist:
                 text += '\n%s' % (obj.extension)
                 text += ' %s' % (obj.bitrate)
-                text += ' %s' % (humansize(obj.get_filesize()))
-                text += '\n%s\n' % (campur.shorten(obj.url))
+                text += ' %s' % (self.campur.humansize(obj.get_filesize()))
+                text += '\n%s\n' % (self.campur.shorten(obj.url))
             custom = [
                 self.bot.imageMessage(thumbnail),
                 self.bot.textMessage(str(text))
