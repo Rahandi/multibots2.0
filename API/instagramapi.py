@@ -1,8 +1,10 @@
 import requests
+from campur import Campur
 
 class InstagramAPI():
     def __init__(self, bots):
         self.bot = bots
+        self.campur = Campur()
 
     def Post(self, token, username, urutan):
         try:
@@ -15,10 +17,10 @@ class InstagramAPI():
                         madiatype = data['mediatype']
                         text = data['caption'] + '\n\nlike: {}\ncomment: {}'.format(data['like_count'], data['comment_count'])
                         if mediatype == 1:
-                            text += '\ndirect link: {}'.format(shorten(data['url']))
+                            text += '\ndirect link: {}'.format(campur.shorten(data['url']))
                             custom = [self.bot.imageMessage(data['url'])]
                         elif mediatype == 2:
-                            text += '\ndirect link: {}'.format(shorten(data['url']))
+                            text += '\ndirect link: {}'.format(campur.shorten(data['url']))
                             custom = [self.bot.videoMessage(data['url'], data['preview'])]
                         elif mediatype == 8:
                             urllist = data['url']
@@ -47,7 +49,7 @@ class InstagramAPI():
             else:
                 self.bot.replyText(token, 'Akun {} tidak ditemukan'.format(username))
         except Exception as e:
-            raise e
+            raise 'instagramapi:Post:' + e
 
     def Story(self, token, username):
         try:
@@ -88,7 +90,7 @@ class InstagramAPI():
             else:
                 self.bot.replyText(token, 'Akun {} tidak ditemukan'.format(username))
         except Exception as e:
-            raise e
+            raise 'instagramapi:Story:' + e
 
     def Info(self, token, username):
         try:
@@ -111,13 +113,4 @@ class InstagramAPI():
             else:
                 self.bot.replyText(token, 'Akun {} tidak ditemukan'.format(username))
         except Exception as e:
-            raise e
-
-    def shorten(url):
-        api_key = 'AIzaSyB2JuzKCAquSRSeO9eiY6iNE9RMoZXbrjo'
-        req_url = 'https://www.googleapis.com/urlshortener/v1/url?key=' + api_key
-        payload = {'longUrl': url}
-        headers = {'content-type': 'application/json'}
-        r = requests.post(req_url, data=json.dumps(payload), headers=headers)
-        resp = json.loads(r.text)
-        return resp['id']
+            raise 'instagramapi:Info:' + e

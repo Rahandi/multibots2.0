@@ -1,9 +1,11 @@
 import requests, pafy
 from bs4 import BeautifulSoup, SoupStrainer
+from campur import Campur
 
 class YoutubeApi():
     def __init__(self, bots):
         self.bot = bots
+        self.campur = Campur()
 
     def Search(self, token, query):
         try:
@@ -80,7 +82,7 @@ class YoutubeApi():
                 text += '\n%s' % (str(obj.resolution.split('x')[1]) + 'p')
                 text += ' %s' % (obj.extensions)
                 text += ' %s' % (humansize(obj.get_filesize()))
-                text += '\n%s\n' % (shorten(obj.url))
+                text += '\n%s\n' % (campur.shorten(obj.url))
             custom = [
                 self.bot.imageMessage(thumbnail),
                 self.bot.textMessage(str(text))
@@ -99,7 +101,7 @@ class YoutubeApi():
                 text += '\n%s' % (obj.extension)
                 text += ' %s' % (obj.bitrate)
                 text += ' %s' % (humansize(obj.get_filesize()))
-                text += '\n%s\n' % (shorten(obj.url))
+                text += '\n%s\n' % (campur.shorten(obj.url))
             custom = [
                 self.bot.imageMessage(thumbnail),
                 self.bot.textMessage(str(text))
@@ -107,24 +109,3 @@ class YoutubeApi():
             self.bot.replyCustom(token, custom)
         except Exception as e:
             raise e
-
-    def humansize(self, nbytes):
-        try:
-            i = 0
-            suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
-            while nbytes >= 1024 and i < len(suffixes)-1:
-                nbytes /= 1024.
-                i += 1
-            f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
-            return '%s %s' % (f, suffixes[i])
-        except Exception as e:
-            raise e
-
-    def shorten(url):
-        api_key = 'AIzaSyB2JuzKCAquSRSeO9eiY6iNE9RMoZXbrjo'
-        req_url = 'https://www.googleapis.com/urlshortener/v1/url?key=' + api_key
-        payload = {'longUrl': url}
-        headers = {'content-type': 'application/json'}
-        r = requests.post(req_url, data=json.dumps(payload), headers=headers)
-        resp = json.loads(r.text)
-        return resp['id']
